@@ -4,12 +4,15 @@ import {
   type FlowAction,
   type FlowState,
   type Screen,
+  type Session,
 } from "./flow.types";
 
-function flowReducer(_state: FlowState, action: FlowAction): FlowState {
+function flowReducer(state: FlowState, action: FlowAction): FlowState {
   switch (action.type) {
     case "NAVIGATE":
-      return { screen: action.screen };
+      return { ...state, screen: action.screen };
+    case "SET_SESSION":
+      return { ...state, session: { ...state.session, ...action.session } };
     case "RESET":
       return INITIAL_FLOW_STATE;
   }
@@ -17,8 +20,11 @@ function flowReducer(_state: FlowState, action: FlowAction): FlowState {
 
 interface FlowContextValue {
   screen: Screen;
+  session: Session;
   /** Move to a new screen. */
   navigate: (screen: Screen) => void;
+  /** Merge partial participant data (name/email/id) into the current session. */
+  setSession: (session: Partial<Session>) => void;
   /** Return to Welcome and clear all session/flow state (idle timeout, kiosk reset). */
   reset: () => void;
 }
@@ -31,14 +37,16 @@ export function FlowProvider({ children }: { children: ReactNode }) {
 
   const value: FlowContextValue = {
     screen: state.screen,
+    session: state.session,
     navigate: (screen) => dispatch({ type: "NAVIGATE", screen }),
+    setSession: (session) => dispatch({ type: "SET_SESSION", session }),
     reset: () => dispatch({ type: "RESET" }),
   };
 
   return <FlowContext.Provider value={value}>{children}</FlowContext.Provider>;
 }
 
-/** Reads and controls the current screen. Must be used under FlowProvider. */
+/** Reads and controls the current screen and session. Must be used under FlowProvider. */
 export function useFlow(): FlowContextValue {
   const ctx = useContext(FlowContext);
   if (!ctx) {

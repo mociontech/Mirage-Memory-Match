@@ -15,12 +15,26 @@ export type Screen =
   | "result"
   | "ranking";
 
+/** Participant data collected across Register/RegisterId, carried through the rest of the flow. */
+export interface Session {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export const EMPTY_SESSION: Session = { id: "", name: "", email: "" };
+
 export interface FlowState {
   screen: Screen;
+  session: Session;
 }
 
 export type FlowAction =
   | { type: "NAVIGATE"; screen: Screen }
+  | { type: "SET_SESSION"; session: Partial<Session> }
   | { type: "RESET" };
 
-export const INITIAL_FLOW_STATE: FlowState = { screen: "welcome" };
+export const INITIAL_FLOW_STATE: FlowState = {
+  screen: "welcome",
+  session: EMPTY_SESSION,
+};

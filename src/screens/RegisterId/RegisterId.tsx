@@ -1,34 +1,59 @@
 import { useState } from "react";
 import { useFlow } from "../../app/FlowMachine";
-import styles from "../screen-placeholder.module.css";
+import { checkIdStatus } from "../../services/idService";
+import { Button } from "../../components/Button";
+import { IdInput, type IdInputValue } from "../../components/IdInput";
+import { Modal } from "../../components/Modal";
+import modalStyles from "../../components/Modal/Modal.module.css";
+import iconWarning from "../../assets/images/icon-warning.svg";
+import { ScreenShell } from "../ScreenShell";
+import styles from "./RegisterId.module.css";
+
+const EMPTY_ID: IdInputValue = ["", ""];
 
 /**
  * ID entry screen. "Advertencia" (ID already used) is a local modal, not a
  * flow screen: the design shows it as an overlay with no path into the game.
- * The placeholder Modal here is replaced by the real Modal component in Phase 2/3.
  */
 export function RegisterId() {
-  const { navigate } = useFlow();
+  const { navigate, setSession } = useFlow();
+  const [blocks, setBlocks] = useState<IdInputValue>(EMPTY_ID);
+  const [checking, setChecking] = useState(false);
   const [showAdvertencia, setShowAdvertencia] = useState(false);
 
-  return (
-    <div className={styles.screen}>
-      <h1 className={styles.title}>Agrega ID</h1>
-      <button className={styles.button} onClick={() => navigate("instructions")}>
-        Comenzar (ID válido)
-      </button>
-      <button className={styles.button} onClick={() => setShowAdvertencia(true)}>
-        Simular ID ya usado
-      </button>
+  const id = `${blocks[0]}-${blocks[1]}`;
+  const canSubmit = blocks[0].length === 3 && blocks[1].length === 3 && !checking;
 
-      {showAdvertencia && (
-        <div className={styles.screen} style={{ position: "absolute", inset: 0, background: "var(--color-overlay)" }}>
-          <p className={styles.title}>Parece que ya participaste en esta experiencia. ¡Gracias!</p>
-          <button className={styles.button} onClick={() => setShowAdvertencia(false)}>
-            Cerrar
-          </button>
-        </div>
-      )}
-    </div>
+  const handleSubmit = async () => {
+    if (!canSubmit) return;
+    setChecking(true);
+    const status = await checkIdStatus(id);
+    setChecking(false);
+    if (status === "used") {
+      setShowAdvertencia(true);
+      return;
+    }
+    setSession({ id });
+    navigate("instructions");
+  };
+
+  return (
+    <ScreenShell
+      actions={
+        <Button onClick={handleSubmit} disabled={!canSubmit}>
+          {checking ? "Verificando..." : "Comenzar"}
+        </Button>
+      }
+    >
+      <h1 className={styles.title}>Agrega ID</h1>
+      <IdInput value={blocks} onChange={setBlocks} />
+
+      <Modal open={showAdvertencia} onClose={() => setShowAdvertencia(false)}>
+        <img className={styles.warningIcon} src={iconWarning} alt="" aria-hidden="true" />
+        <p className={modalStyles.text}>
+          Parece que ya participaste en esta experiencia. ¡Gracias!
+        </p>
+      </Modal>
+    </ScreenShell>
   );
 }

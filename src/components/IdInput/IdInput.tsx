@@ -6,6 +6,8 @@ export type IdInputValue = readonly [string, string];
 interface IdInputProps {
   value: IdInputValue;
   onChange: (value: IdInputValue) => void;
+  /** Renders the two blocks as read-only, e.g. to display an already-generated ID. */
+  readOnly?: boolean;
 }
 
 const BLOCK_LENGTH = 3;
@@ -18,7 +20,7 @@ function sanitize(raw: string): string {
  * Two 3-digit blocks ("321 - 321") for entering/displaying a participation ID.
  * Auto-advances focus to the second block once the first is complete.
  */
-export function IdInput({ value, onChange }: IdInputProps) {
+export function IdInput({ value, onChange, readOnly = false }: IdInputProps) {
   const secondRef = useRef<HTMLInputElement>(null);
 
   const handleFirstChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -43,6 +45,7 @@ export function IdInput({ value, onChange }: IdInputProps) {
         autoComplete="off"
         maxLength={BLOCK_LENGTH}
         aria-label="ID, primer bloque"
+        readOnly={readOnly}
       />
       <span className={styles.dash} aria-hidden="true" />
       <input
@@ -54,6 +57,7 @@ export function IdInput({ value, onChange }: IdInputProps) {
         autoComplete="off"
         maxLength={BLOCK_LENGTH}
         aria-label="ID, segundo bloque"
+        readOnly={readOnly}
       />
     </div>
   );

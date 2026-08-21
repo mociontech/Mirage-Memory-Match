@@ -1,0 +1,16 @@
+.title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(28px, 6.5vh, 52px);
+  color: var(--color-brand-red);
+}
+
+.description {
+  font-family: var(--font-body);
+  color: var(--color-text-muted);
+  font-size: clamp(14px, 2.4vh, 22px);
+}
+
+.description strong {
+  font-weight: 700;
+}
