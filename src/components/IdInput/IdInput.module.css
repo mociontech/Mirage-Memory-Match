@@ -1,0 +1,27 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.box {
+  width: clamp(80px, 14vh, 130px);
+  height: clamp(96px, 16.3vh, 157px);
+  background: var(--color-input-bg);
+  border: 1.5px solid var(--color-input-border);
+  border-radius: var(--radius-pill);
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(32px, 8vh, 64px);
+  color: var(--color-text-muted);
+  outline: none;
+}
+
+.dash {
+  width: clamp(16px, 3vh, 24px);
+  height: 3px;
+  background: var(--color-text-muted);
+  flex: none;
+}
