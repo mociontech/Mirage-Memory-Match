@@ -1,0 +1,30 @@
+/* Temporary layout shared by empty Phase-1 screens.
+   Replaced screen-by-screen with real designs in later phases. */
+.screen {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  text-align: center;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(28px, 6vh, 48px);
+  color: var(--color-brand-red);
+}
+
+.button {
+  background: var(--color-brand-red);
+  color: var(--color-surface);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(16px, 2.4vh, 24px);
+  border-radius: var(--radius-pill);
+  padding: var(--space-3) var(--space-6);
+}
