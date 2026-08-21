@@ -15,14 +15,34 @@ export type Screen =
   | "result"
   | "ranking";
 
-/** Participant data collected across Register/RegisterId, carried through the rest of the flow. */
+/**
+ * Participant data collected across Register/RegisterId, plus the game
+ * result once played. This is the working draft of a Participation
+ * (see types/participation.ts) — Fase 5 reads it to build the final payload.
+ */
 export interface Session {
   id: string;
   name: string;
   email: string;
+  score: number;
+  attempts: number;
+  matchedProducts: string[];
+  /** ISO 8601, set when the Game screen mounts. */
+  startedAt: string;
+  /** ISO 8601, set when the game ends (match complete or time out). */
+  finishedAt: string;
 }
 
-export const EMPTY_SESSION: Session = { id: "", name: "", email: "" };
+export const EMPTY_SESSION: Session = {
+  id: "",
+  name: "",
+  email: "",
+  score: 0,
+  attempts: 0,
+  matchedProducts: [],
+  startedAt: "",
+  finishedAt: "",
+};
 
 export interface FlowState {
   screen: Screen;

@@ -1,10 +1,10 @@
-import styles from "./AttemptsBadge.module.css";
+import { Badge } from "../Badge";
 
 interface AttemptsBadgeProps {
   attempts: number;
 }
 
-/** Small pill showing the attempts counter during the game ("Intentos: N"). */
+/** "Intentos: N" pill shown during the game. */
 export function AttemptsBadge({ attempts }: AttemptsBadgeProps) {
-  return <div className={styles.badge}>Intentos: {attempts}</div>;
+  return <Badge>Intentos: {attempts}</Badge>;
 }
