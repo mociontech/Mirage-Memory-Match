@@ -1,0 +1,13 @@
+.title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(26px, 5.6vh, 44px);
+  color: var(--color-brand-red);
+}
+
+.points {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(28px, 6.4vh, 48px);
+  color: var(--color-text);
+}
