@@ -8,8 +8,8 @@ de React.
 
 - Node 22+
 - `npm install`
-- Copiar `.env.example` a `.env.local` y llenar `VITE_KIOSK_ID`,
-  `VITE_DATA_HUB_URL`, `VITE_RANKING_DB_URL` (ver sección "Pendientes" —
+- Copiar `.env.example` a `.env.local` y llenar `VITE_KIOSK_ID`, `VITE_COUNTRY`,
+  las variables `VITE_EVIUS_*` y `VITE_RANKING_DB_*` (ver sección "Pendientes" —
   hoy están vacías a propósito).
 
 ## Scripts
@@ -69,12 +69,14 @@ registros.
 
 ### Capa de servicios detrás de una interfaz
 
-No existe todavía el endpoint intermedio (edge function) mencionado en el
-brief original, así que `services/api.ts` hace fan-out en cliente a dos
-destinos (Data Hub + ranking DB) gateados por variables de entorno vacías por
-defecto. El día que exista un endpoint único, solo cambia este archivo — el
+`services/api.ts` hace fan-out en cliente a tres destinos por participación:
+Evius `/attendees` (dedupe por email + eventId, se salta si no hay email),
+Evius `/experiences` (con fallback documentado a `/activities` si `/experiences`
+falla) y la tabla compartida `participations` en Supabase (mismo proyecto que
+usa Catálogo, dedupe por `participant_id` + `country` + `experience`). Todo
+gateado por variables de entorno vacías por defecto (ver `.env.example`). El
 resto de la app (outbox, screens) no sabe ni le importa cuántos destinos hay
-detrás.
+detrás — solo conoce `submitParticipation(participation)`.
 
 ### Grid del tablero derivado, no hardcodeado
 
@@ -113,14 +115,20 @@ claramente marcados — pero hace falta contenido real antes de producción:
    colores de relleno (`screens/Game/Card.tsx`), no imágenes.
 2. **Frase de marca de Bienvenida**: el propio Figma trae el texto literal
    "frase inicial de marca" sin reemplazar — se muestra tal cual.
-3. **Endpoints reales**: `.env.example` documenta `VITE_DATA_HUB_URL` y
-   `VITE_RANKING_DB_URL`, ambas vacías. Mientras no se configuren,
-   `submitParticipation` lanza y el outbox simplemente sigue reintentando
-   (comportamiento seguro, no hay pérdida de datos: quedan en `localStorage`).
+3. **Credenciales reales**: `.env.example` documenta las variables
+   `VITE_EVIUS_*` y `VITE_RANKING_DB_*`, todas vacías. Mientras no se
+   configuren, `submitParticipation` lanza y el outbox simplemente sigue
+   reintentando (comportamiento seguro, no hay pérdida de datos: quedan en
+   `localStorage`).
 4. **Ranking multi-experiencia**: Kick and Match calcula su propio puntaje
-   interno (máximo 100). Cómo se combina con la otra experiencia del tótem
-   para el ranking global es una decisión de negocio que vive fuera de este
-   repo (backend/Data Hub), no en `services/ranking.ts`.
+   interno (máximo 100). El promedio con Catálogo (tratando la no jugada
+   como 0) vive en las vistas `ranking_by_experience`/`ranking_combined` de
+   Supabase, no en este repo.
+5. **`fetchRanking` (Top 10)**: apunta a `ranking_by_experience` filtrando por
+   `country`/`experience`, pero las columnas reales de esa vista (y si trae
+   algún nombre para mostrar — `participations` solo guarda el email como
+   `participant_id`, no un nombre) todavía no están confirmadas contra el
+   esquema real. Verificar antes de confiar en el Top 10 en producción.
 
 ## Decisiones registradas durante el desarrollo (Fase 0)
 

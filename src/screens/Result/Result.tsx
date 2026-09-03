@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useFlow } from "../../app/FlowMachine";
 import { Button } from "../../components/Button";
-import { rememberUsedId } from "../../services/idService";
+import { rememberUsedEmail, rememberUsedId } from "../../services/idService";
 import { enqueueParticipation } from "../../services/outbox";
 import type { Participation } from "../../types/participation";
 import { ScreenShell } from "../ScreenShell";
@@ -17,6 +17,7 @@ export function Result() {
     submitted.current = true;
 
     rememberUsedId(session.id);
+    if (session.email) rememberUsedEmail(session.email);
 
     const participation: Participation = {
       id: session.id,
