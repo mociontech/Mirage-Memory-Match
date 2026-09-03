@@ -3,6 +3,7 @@ import {
   INITIAL_FLOW_STATE,
   type FlowAction,
   type FlowState,
+  type GameResult,
   type Screen,
   type Session,
 } from "./flow.types";
@@ -13,6 +14,8 @@ function flowReducer(state: FlowState, action: FlowAction): FlowState {
       return { ...state, screen: action.screen };
     case "SET_SESSION":
       return { ...state, session: { ...state.session, ...action.session } };
+    case "SET_RESULT":
+      return { ...state, result: action.result };
     case "RESET":
       return INITIAL_FLOW_STATE;
   }
@@ -21,10 +24,13 @@ function flowReducer(state: FlowState, action: FlowAction): FlowState {
 interface FlowContextValue {
   screen: Screen;
   session: Session;
+  result: GameResult | null;
   /** Move to a new screen. */
   navigate: (screen: Screen) => void;
   /** Merge partial participant data (name/email/id) into the current session. */
   setSession: (session: Partial<Session>) => void;
+  /** Records the finished game's outcome, read by Result to submit the participation. */
+  setResult: (result: GameResult) => void;
   /** Return to Welcome and clear all session/flow state (idle timeout, kiosk reset). */
   reset: () => void;
 }
@@ -38,8 +44,10 @@ export function FlowProvider({ children }: { children: ReactNode }) {
   const value: FlowContextValue = {
     screen: state.screen,
     session: state.session,
+    result: state.result,
     navigate: (screen) => dispatch({ type: "NAVIGATE", screen }),
     setSession: (session) => dispatch({ type: "SET_SESSION", session }),
+    setResult: (result) => dispatch({ type: "SET_RESULT", result }),
     reset: () => dispatch({ type: "RESET" }),
   };
 
