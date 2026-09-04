@@ -1,25 +1,56 @@
+import boilerTurboFlux from "../assets/images/products/boiler-turbo-flux.webp";
+import ciMagnumComercialLigero from "../assets/images/products/ci-magnum-comercial-ligero.webp";
+import disx30 from "../assets/images/products/disx30.webp";
+import m22MinisplitColombia from "../assets/images/products/m22-minisplit-colombia.webp";
+import neoMinisplit from "../assets/images/products/neo-minisplit.webp";
+import nexMinisplit from "../assets/images/products/nex-minisplit.webp";
+import v32Minisplit from "../assets/images/products/v32-minisplit.webp";
+import xtraMultinverter from "../assets/images/products/xtra-multinverter.webp";
+
 export interface Product {
   id: string;
   name: string;
+  image: string;
   /** Copy shown in ProductPopup when this product's pair is matched. */
   popupCopy: string;
 }
 
 /**
- * PENDING (Fase 4 audit): only "rt3" has real content from the client — the
- * other 9 are placeholders so the board/popup pipeline is complete and
- * testable. Swap these for the real name + copy per product before launch;
- * nothing else needs to change (Game reads this list length, not a literal 10).
+ * Colombia board, per Figma node 209:862 ("inicio Juego" in the COLOMBIA
+ * section of the Mirage file, fileKey vilVPSsVUtGwTG8Er9njo5): 8 products,
+ * 16 cards, 4x4 grid — matches PAIRS_COUNT in game.config.ts.
+ *
+ * PENDING (client copy): popupCopy is still placeholder for all products —
+ * Figma only labels this "8 pantallas totales, una por producto" without
+ * final copy text yet. Names and images are real.
  */
 export const PRODUCTS: Product[] = [
-  { id: "rt3", name: "Aire RT3", popupCopy: "Con el aire RT3 de mirage la vida es cool" },
-  { id: "product-02", name: "Producto 2", popupCopy: "Copy pendiente del cliente para Producto 2" },
-  { id: "product-03", name: "Producto 3", popupCopy: "Copy pendiente del cliente para Producto 3" },
-  { id: "product-04", name: "Producto 4", popupCopy: "Copy pendiente del cliente para Producto 4" },
-  { id: "product-05", name: "Producto 5", popupCopy: "Copy pendiente del cliente para Producto 5" },
-  { id: "product-06", name: "Producto 6", popupCopy: "Copy pendiente del cliente para Producto 6" },
-  { id: "product-07", name: "Producto 7", popupCopy: "Copy pendiente del cliente para Producto 7" },
-  { id: "product-08", name: "Producto 8", popupCopy: "Copy pendiente del cliente para Producto 8" },
-  { id: "product-09", name: "Producto 9", popupCopy: "Copy pendiente del cliente para Producto 9" },
-  { id: "product-10", name: "Producto 10", popupCopy: "Copy pendiente del cliente para Producto 10" },
+  { id: "nex", name: "NEX", image: nexMinisplit, popupCopy: "Copy pendiente del cliente para NEX" },
+  { id: "neo", name: "NEO", image: neoMinisplit, popupCopy: "Copy pendiente del cliente para NEO" },
+  { id: "v32", name: "V32", image: v32Minisplit, popupCopy: "Copy pendiente del cliente para V32" },
+  { id: "disx30", name: "DIS X30", image: disx30, popupCopy: "Copy pendiente del cliente para DIS X30" },
+  {
+    id: "ci-magnum",
+    name: "Ci Magnum",
+    image: ciMagnumComercialLigero,
+    popupCopy: "Copy pendiente del cliente para Ci Magnum",
+  },
+  {
+    id: "xtra-multinverter",
+    name: "Xtra Multi Inverter",
+    image: xtraMultinverter,
+    popupCopy: "Copy pendiente del cliente para Xtra Multi Inverter",
+  },
+  {
+    id: "m22-magnum",
+    name: "Magnum 22",
+    image: m22MinisplitColombia,
+    popupCopy: "Copy pendiente del cliente para Magnum 22",
+  },
+  {
+    id: "boiler-turbo-flux",
+    name: "Turbo Flux",
+    image: boilerTurboFlux,
+    popupCopy: "Copy pendiente del cliente para Turbo Flux",
+  },
 ];

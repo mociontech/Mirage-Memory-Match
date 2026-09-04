@@ -10,21 +10,6 @@ interface CardProps {
   onTap: () => void;
 }
 
-const FACE_UP_COLORS = [
-  "#e4032c",
-  "#333333",
-  "#848484",
-  "#ff006a",
-  "#a81780",
-  "#00dad7",
-] as const;
-
-function faceUpColorFor(productId: string): string {
-  let hash = 0;
-  for (const char of productId) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
-  return FACE_UP_COLORS[hash % FACE_UP_COLORS.length]!;
-}
-
 /** One board tile: flips with transform/backface-visibility only (no layout-affecting animation). */
 export function Card({ isFlipped, isMatched, product, onTap }: CardProps) {
   const [isAnimating, setIsAnimating] = useState(false);
@@ -49,11 +34,8 @@ export function Card({ isFlipped, isMatched, product, onTap }: CardProps) {
         <div className={`${styles.face} ${styles.faceDown}`}>
           <img className={styles.faceDownIcon} src={logoMark} alt="" aria-hidden="true" />
         </div>
-        <div
-          className={`${styles.face} ${styles.faceUp}`}
-          style={{ background: product ? faceUpColorFor(product.id) : undefined }}
-        >
-          {product?.name}
+        <div className={`${styles.face} ${styles.faceUp}`}>
+          {product && <img className={styles.productImage} src={product.image} alt={product.name} />}
         </div>
       </div>
     </button>

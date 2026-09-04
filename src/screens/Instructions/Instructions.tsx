@@ -7,8 +7,9 @@ import styles from "./Instructions.module.css";
 
 /**
  * Explains the memory-match rules before the board loads. "Si completas las
- * N" reads off PAIRS_COUNT instead of the "6" hardcoded in the Figma copy —
- * that number was one of the Fase 0 inconsistencies, resolved to 10 pairs.
+ * N" reads off PAIRS_COUNT instead of a hardcoded number in the Figma copy —
+ * that number was one of the Fase 0 inconsistencies, resolved to 8 pairs
+ * (Colombia board, Figma node 209:862).
  */
 export function Instructions() {
   const { navigate } = useFlow();
