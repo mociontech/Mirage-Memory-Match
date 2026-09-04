@@ -12,11 +12,6 @@
   width: 100%;
 }
 
-.warningIcon {
-  width: clamp(48px, 9vh, 80px);
-  height: auto;
-}
-
 .link {
   /* Figma used Montserrat here, but per the Fase 0 audit that's a "ghost"
      font not otherwise present in the file — Poppins is the real brand
@@ -33,4 +28,9 @@
 .link:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.warningIcon {
+  width: clamp(48px, 9vh, 80px);
+  height: auto;
 }

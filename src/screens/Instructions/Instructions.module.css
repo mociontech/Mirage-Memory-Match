@@ -1,0 +1,28 @@
+.icon {
+  width: clamp(90px, 18vh, 160px);
+  height: auto;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(26px, 5.6vh, 44px);
+  color: var(--color-text);
+}
+
+.list {
+  list-style: disc;
+  padding-left: 1.2em;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-family: var(--font-body);
+  color: var(--color-text-muted);
+  font-size: clamp(14px, 2.2vh, 20px);
+}
+
+.list strong {
+  font-weight: 700;
+  color: var(--color-text);
+}

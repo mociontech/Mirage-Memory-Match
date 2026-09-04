@@ -1,0 +1,31 @@
+.mark {
+  width: clamp(80px, 16vw, 160px);
+  height: auto;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 0.95;
+  text-align: center;
+}
+
+.titleTop {
+  display: block;
+  color: var(--color-brand-red);
+  font-size: clamp(40px, 10vh, 80px);
+}
+
+.titleBottom {
+  display: block;
+  color: var(--color-text);
+  font-size: clamp(26px, 6.6vh, 52px);
+}
+
+.tagline {
+  font-family: var(--font-body);
+  font-weight: 700;
+  color: var(--color-brand-red-dark);
+  text-transform: uppercase;
+  font-size: clamp(14px, 2.6vh, 24px);
+}

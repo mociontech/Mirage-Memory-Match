@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { FlowProvider, useFlow } from "./FlowMachine";
 import { useIdleReset } from "../hooks/useIdleReset";
+import { initOutboxFlush } from "../services/outbox";
 import { Welcome } from "../screens/Welcome";
 import { Register } from "../screens/Register";
 import { RegisterId } from "../screens/RegisterId";
@@ -62,6 +63,7 @@ function AppShell() {
   const { reset } = useFlow();
   useIdleReset(reset);
   useKioskGestureLock();
+  useEffect(() => initOutboxFlush(), []);
 
   return (
     <div className={styles.shell}>

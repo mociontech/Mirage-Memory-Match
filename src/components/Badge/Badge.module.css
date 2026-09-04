@@ -2,7 +2,6 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 43%;
   background: var(--color-brand-red);
   color: var(--color-surface);
   font-family: var(--font-display);

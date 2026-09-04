@@ -1,0 +1,61 @@
+.outer {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  perspective: 800px;
+}
+
+.inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 400ms ease;
+  transform: rotateY(0deg);
+}
+
+.inner.flipped {
+  transform: rotateY(180deg);
+}
+
+/* will-change only while the flip transition is actually running, per the
+   perf constraint — permanently hinting the compositor here would waste
+   memory on a 20-card board that is mostly idle. */
+.inner[data-animating="true"] {
+  will-change: transform;
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8%;
+}
+
+.faceDown {
+  background: var(--color-brand-red);
+}
+
+.faceDownIcon {
+  width: 45%;
+  height: auto;
+  filter: brightness(0) invert(1);
+}
+
+.faceUp {
+  transform: rotateY(180deg);
+  color: var(--color-surface);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(10px, 1.8vh, 16px);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.matched {
+  opacity: 0.55;
+}
