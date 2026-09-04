@@ -10,12 +10,14 @@ interface ScreenShellProps {
   actions?: ReactNode;
   /** The Instructions/Advertencia screens omit the logo in favor of other art. */
   showLogo?: boolean;
+  /** Fires on a tap anywhere on the shell — used by dead-end screens (e.g. Ranking) to advance early. */
+  onClick?: () => void;
 }
 
 /** The BrandFrame + Logo + gradient background shared by every kiosk screen. */
-export function ScreenShell({ children, actions, showLogo = true }: ScreenShellProps) {
+export function ScreenShell({ children, actions, showLogo = true, onClick }: ScreenShellProps) {
   return (
-    <div className={styles.shell}>
+    <div className={styles.shell} onClick={onClick}>
       <BrandFrame />
       {showLogo && <div className={styles.logo}><Logo /></div>}
       <div className={styles.content}>{children}</div>
