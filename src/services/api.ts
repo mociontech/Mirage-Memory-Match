@@ -110,6 +110,7 @@ async function submitRanking(participation: Participation): Promise<void> {
     },
     body: JSON.stringify({
       participant_id: normalizeEmail(participation.email),
+      participant_name: participation.name,
       country: COUNTRY,
       experience: "memory_match",
       score: participation.points,
@@ -149,11 +150,9 @@ export async function submitParticipation(participation: Participation): Promise
  * Top 10 for the Ranking screen. Returns an empty list if unconfigured or
  * unreachable — never throws.
  *
- * TODO: points at ranking_by_experience, filtered to this experience/country.
- * Column names (and whether a display name is even available — the
- * `participations` table only stores participant_id/email, no name) are
- * still unconfirmed against the real Supabase view — verify before relying
- * on this in production.
+ * Reads participant_name off ranking_by_experience (added alongside
+ * participant_id — see the migration note in .env.example). Falls back to
+ * participant_id (the email) for rows submitted before that column existed.
  */
 export async function fetchRanking(): Promise<RankingEntry[]> {
   if (!RANKING_DB_URL || !RANKING_DB_API_KEY) return [];
@@ -171,8 +170,12 @@ export async function fetchRanking(): Promise<RankingEntry[]> {
       },
     });
     if (!res.ok) return [];
-    const rows = (await res.json()) as Array<{ participant_id: string; score: number }>;
-    return rows.map((row) => ({ name: row.participant_id, points: row.score }));
+    const rows = (await res.json()) as Array<{
+      participant_id: string;
+      participant_name?: string | null;
+      score: number;
+    }>;
+    return rows.map((row) => ({ name: row.participant_name || row.participant_id, points: row.score }));
   } catch {
     return [];
   }
