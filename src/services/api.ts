@@ -120,27 +120,29 @@ async function submitRanking(participation: Participation): Promise<void> {
 }
 
 /**
- * Sends one participation to every configured destination. Throws if any
- * destination is unreachable/unconfigured or any request fails — outbox.ts
- * is what decides what to do about that (retry later), this function never
- * swallows errors.
+ * Sends one participation to every destination that has its own env vars
+ * configured — Evius and the ranking DB are independent deployments, so one
+ * being unset (e.g. Evius credentials not issued yet) must not block the
+ * other. Throws if a *configured* destination's request fails; outbox.ts is
+ * what decides what to do about that (retry later), this function never
+ * swallows a real request failure.
  */
 export async function submitParticipation(participation: Participation): Promise<void> {
-  if (!EVIUS_URL || !EVIUS_TOKEN || !COUNTRY) {
+  const tasks: Promise<void>[] = [];
+
+  if (EVIUS_URL && EVIUS_TOKEN && COUNTRY) {
+    tasks.push(submitAttendee(participation), submitExperienceResult(participation));
+  }
+  if (RANKING_DB_URL && RANKING_DB_API_KEY) {
+    tasks.push(submitRanking(participation));
+  }
+
+  if (tasks.length === 0) {
     throw new Error(
-      "submitParticipation: VITE_EVIUS_URL / VITE_EVIUS_TOKEN / VITE_COUNTRY are not configured yet",
+      "submitParticipation: neither Evius (VITE_EVIUS_URL/VITE_EVIUS_TOKEN/VITE_COUNTRY) nor the ranking DB (VITE_RANKING_DB_URL/VITE_RANKING_DB_API_KEY) are configured",
     );
   }
-  if (!RANKING_DB_URL || !RANKING_DB_API_KEY) {
-    throw new Error(
-      "submitParticipation: VITE_RANKING_DB_URL / VITE_RANKING_DB_API_KEY are not configured yet",
-    );
-  }
-  await Promise.all([
-    submitAttendee(participation),
-    submitExperienceResult(participation),
-    submitRanking(participation),
-  ]);
+  await Promise.all(tasks);
 }
 
 /**
