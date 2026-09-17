@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useMemoryGame, type Card } from "./useMemoryGame";
-import { MISMATCH_DELAY_MS, PAIRS_COUNT } from "./game.config";
+import { MAX_SCORE, MISMATCH_DELAY_MS, PAIRS_COUNT, POINTS_PER_MATCH } from "./game.config";
 
 function findMatchingPair(cards: Card[]): [Card, Card] {
   for (const card of cards) {
@@ -32,7 +32,7 @@ describe("useMemoryGame", () => {
     expect(result.current.cards.every((c) => !c.isFlipped && !c.isMatched)).toBe(true);
   });
 
-  it("match: flipping two cards of the same product marks both matched and scores +10", () => {
+  it("match: flipping two cards of the same product marks both matched and scores +POINTS_PER_MATCH", () => {
     const { result } = renderHook(() => useMemoryGame());
     const [a, b] = findMatchingPair(result.current.cards);
 
@@ -43,20 +43,21 @@ describe("useMemoryGame", () => {
     const flippedB = result.current.cards.find((c) => c.id === b.id)!;
     expect(flippedA.isMatched).toBe(true);
     expect(flippedB.isMatched).toBe(true);
-    expect(result.current.score).toBe(10);
+    expect(result.current.score).toBe(POINTS_PER_MATCH);
     expect(result.current.lastMatchedProduct?.id).toBe(a.productId);
   });
 
-  it("mismatch: flipping two different products flips them back down after the delay and scores -5", () => {
+  it("mismatch: flipping two different products flips them back down after the delay and costs a penalty", () => {
     const { result } = renderHook(() => useMemoryGame());
     const [a, b] = findMismatchedPair(result.current.cards);
 
     act(() => result.current.flipCard(a.id));
     act(() => result.current.flipCard(b.id));
 
-    // Both stay face up (but not matched) during the reveal window.
+    // Both stay face up (but not matched) during the reveal window, and shake to signal the miss.
     expect(result.current.cards.find((c) => c.id === a.id)!.isFlipped).toBe(true);
     expect(result.current.phase).toBe("evaluating");
+    expect(result.current.shakingIds).toEqual([a.id, b.id]);
 
     act(() => {
       vi.advanceTimersByTime(MISMATCH_DELAY_MS);
@@ -65,7 +66,8 @@ describe("useMemoryGame", () => {
     expect(result.current.cards.find((c) => c.id === a.id)!.isFlipped).toBe(false);
     expect(result.current.cards.find((c) => c.id === b.id)!.isFlipped).toBe(false);
     expect(result.current.phase).toBe("idle");
-    expect(result.current.score).toBe(0); // clamped at 0, not negative
+    expect(result.current.shakingIds).toEqual([]);
+    expect(result.current.score).toBe(0); // clamped: 0 matches minus one penalty can't go negative
   });
 
   it("attempts: increments once per pair evaluated, not once per tap", () => {
@@ -91,7 +93,7 @@ describe("useMemoryGame", () => {
     }
 
     expect(result.current.phase).toBe("finished");
-    expect(result.current.score).toBe(PAIRS_COUNT * 10);
+    expect(result.current.score).toBe(MAX_SCORE);
   });
 
   it("finished: also reached when the countdown reaches zero, regardless of pairs left", () => {

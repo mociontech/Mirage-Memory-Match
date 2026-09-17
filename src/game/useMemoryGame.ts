@@ -34,6 +34,8 @@ export interface UseMemoryGameResult {
   matchedPairs: number;
   totalPairs: number;
   matchedProductIds: string[];
+  /** The two card ids currently shaking off a wrong guess, purely for visual feedback. */
+  shakingIds: string[];
   /** Set right after a match resolves; screens use this to open ProductPopup. Cleared by acknowledgeMatch. */
   lastMatchedProduct: Product | null;
   flipCard: (cardId: string) => void;
@@ -54,7 +56,7 @@ function buildDeck(): Card[] {
  * All memory-match game logic, isolated from JSX so it can be unit tested
  * directly (see useMemoryGame.test.ts).
  */
-export function useMemoryGame(): UseMemoryGameResult {
+export function useMemoryGame(timerActive = true): UseMemoryGameResult {
   const [cards, setCards] = useState<Card[]>(buildDeck);
   const [phase, setPhase] = useState<GamePhase>("idle");
   const [attempts, setAttempts] = useState(0);
@@ -63,6 +65,8 @@ export function useMemoryGame(): UseMemoryGameResult {
   const [timeRemainingMs, setTimeRemainingMs] = useState(GAME_DURATION_MS);
   const [lastMatchedProduct, setLastMatchedProduct] = useState<Product | null>(null);
   const [awaitingAcknowledge, setAwaitingAcknowledge] = useState(false);
+  /** Card ids currently shaking off a wrong guess — cleared once they flip back down. */
+  const [shakingIds, setShakingIds] = useState<string[]>([]);
 
   const gridColumns = useMemo(() => getGridColumns(cards.length), [cards.length]);
   const score = useMemo(() => computeScore(matches, mismatches), [matches, mismatches]);
@@ -74,14 +78,16 @@ export function useMemoryGame(): UseMemoryGameResult {
   );
 
   // Countdown timer — ends the game at 0 regardless of pairs remaining.
+  // `timerActive` lets the caller hold the clock during a pre-game intro
+  // (cards dropping in + a preview flip) without touching game state.
   useEffect(() => {
-    if (phase === "finished") return;
+    if (phase === "finished" || !timerActive) return;
     const tickMs = 250;
     const interval = setInterval(() => {
       setTimeRemainingMs((prev) => Math.max(0, prev - tickMs));
     }, tickMs);
     return () => clearInterval(interval);
-  }, [phase]);
+  }, [phase, timerActive]);
 
   useEffect(() => {
     if (timeRemainingMs === 0) {
@@ -135,12 +141,14 @@ export function useMemoryGame(): UseMemoryGameResult {
         setPhase("idle");
       } else {
         setMismatches((prev) => prev + 1);
+        setShakingIds([first.id, cardId]);
         mismatchTimeoutRef.current = setTimeout(() => {
           setCards((prev) =>
             prev.map((c) =>
               c.id === first.id || c.id === cardId ? { ...c, isFlipped: false } : c,
             ),
           );
+          setShakingIds([]);
           // Don't downgrade a "finished" reached by the timer while this was pending.
           setPhase((prev) => (prev === "finished" ? prev : "idle"));
         }, MISMATCH_DELAY_MS);
@@ -164,6 +172,7 @@ export function useMemoryGame(): UseMemoryGameResult {
     matchedPairs,
     totalPairs,
     matchedProductIds,
+    shakingIds,
     lastMatchedProduct,
     flipCard,
     acknowledgeMatch,
