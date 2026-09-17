@@ -106,7 +106,15 @@ async function submitRanking(participation: Participation): Promise<void> {
       "Content-Type": "application/json",
       apikey: RANKING_DB_API_KEY,
       Authorization: `Bearer ${RANKING_DB_API_KEY}`,
-      Prefer: "resolution=merge-duplicates,return=minimal",
+      // Plain insert, not an upsert: the anon key only has INSERT on this
+      // table (no UPDATE/SELECT), so `resolution=merge-duplicates` would
+      // make Postgres reject every insert with 42501 while planning the
+      // ON CONFLICT DO UPDATE it implies - see docs/supabase-schema.sql in
+      // the Catalogo project for the RLS policies. A genuine retry of the
+      // same participation is rejected with 409 by the unique constraint,
+      // which is fine: the client already guards against replay via
+      // hasEmailPlayedLocally.
+      Prefer: "return=minimal",
     },
     body: JSON.stringify({
       participant_id: normalizeEmail(participation.email),
