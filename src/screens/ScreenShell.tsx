@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { BrandFrame } from "../components/BrandFrame";
+import { Footer } from "../components/Footer";
 import { Logo } from "../components/Logo";
 import styles from "./ScreenShell.module.css";
 
@@ -22,6 +23,7 @@ export function ScreenShell({ children, actions, showLogo = true, onClick }: Scr
       {showLogo && <div className={styles.logo}><Logo /></div>}
       <div className={styles.content}>{children}</div>
       {actions && <div className={styles.actions}>{actions}</div>}
+      <Footer />
     </div>
   );
 }

@@ -8,6 +8,7 @@ import { RegisterId } from "../screens/RegisterId";
 import { IdGenerated } from "../screens/IdGenerated";
 import { Instructions } from "../screens/Instructions";
 import { Game } from "../screens/Game";
+import { Felicidades } from "../screens/Felicidades";
 import { Result } from "../screens/Result";
 import { Ranking } from "../screens/Ranking";
 import styles from "./App.module.css";
@@ -52,6 +53,8 @@ function CurrentScreen() {
       return <Instructions />;
     case "game":
       return <Game />;
+    case "felicidades":
+      return <Felicidades />;
     case "result":
       return <Result />;
     case "ranking":

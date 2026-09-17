@@ -12,6 +12,7 @@ export type Screen =
   | "idGenerated"
   | "instructions"
   | "game"
+  | "felicidades"
   | "result"
   | "ranking";
 

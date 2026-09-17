@@ -22,7 +22,7 @@
   --font-display: "Poppins", system-ui, sans-serif;
   --font-body: "Lora", Georgia, serif;
 
-  --radius-pill: 16px;
+  --radius-pill: 0.83vh;
 
   /* Escala de espaciado, unidad base ligada al viewport para escalado fluido en el tótem */
   --space-1: clamp(4px, 0.4vh, 8px);
